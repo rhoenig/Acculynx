@@ -1,31 +1,48 @@
-﻿@{
+﻿@using twitter.Models
+
+@model TweetsModel
+
+@{
     ViewBag.Title = "Home Page";
 }
 
 <div class="jumbotron">
-    <h1>ASP.NET</h1>
-    <p class="lead">ASP.NET is a free web framework for building great Web sites and Web applications using HTML, CSS and JavaScript.</p>
-    <p><a href="https://asp.net" class="btn btn-primary btn-lg">Learn more &raquo;</a></p>
-</div>
-
-<div class="row">
-    <div class="col-md-4">
-        <h2>Getting started</h2>
+    <h1>Twitter Terms Popularity</h1>
+    <p>Enter 2 terms in the boxes below to check the popularity of words tweeted.</p>
+    @using (Html.BeginForm("Index", "Home", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
+    {
+        @Html.AntiForgeryToken()
         <p>
-            ASP.NET MVC gives you a powerful, patterns-based way to build dynamic websites that
-            enables a clean separation of concerns and gives you full control over markup
-            for enjoyable, agile development.
+            @Html.Label("Term 1:") @Html.TextBox("txtSearchTerm1", Model.searchTerm1) <br />
+            @Html.Label("Term 2:") @Html.TextBox("txtSearchTerm2", Model.searchTerm2)
+            @if (Model.strError != "") {<br /><span class="error">@Model.strError</span>}
         </p>
-        <p><a class="btn btn-default" href="https://go.microsoft.com/fwlink/?LinkId=301865">Learn more &raquo;</a></p>
-    </div>
-    <div class="col-md-4">
-        <h2>Get more libraries</h2>
-        <p>NuGet is a free Visual Studio extension that makes it easy to add, remove, and update libraries and tools in Visual Studio projects.</p>
-        <p><a class="btn btn-default" href="https://go.microsoft.com/fwlink/?LinkId=301866">Learn more &raquo;</a></p>
-    </div>
-    <div class="col-md-4">
-        <h2>Web Hosting</h2>
-        <p>You can easily find a web hosting company that offers the right mix of features and price for your applications.</p>
-        <p><a class="btn btn-default" href="https://go.microsoft.com/fwlink/?LinkId=301867">Learn more &raquo;</a></p>
-    </div>
+        <p>
+            <input type="submit" name="btnSearchTweets" value="Search" id="searchTweets" />
+        </p>
+        if (Model.showTweets) { 
+            <div id="vwTweets" style="width: 100%; float:left;">
+                <p><b>Your popularity search:</b> @Model.searchTerm1 = @Model.searchTermCount1 compared to @Model.searchTerm2 = @Model.searchTermCount2</p>
+                <div>
+                    @if (Model.searchTermCount1 > Model.searchTermCount2) {
+                        <p><b>@Model.searchTerm1</b> had more popularity than <b>@Model.searchTerm2</b></p>
+                    } else if(Model.searchTermCount1 < Model.searchTermCount2) {
+                        <p><b>@Model.searchTerm2</b> had more popularity than <b>@Model.searchTerm1</b></p>
+                    } else {
+                        <p><b>@Model.searchTerm1</b> and <b>@Model.searchTerm2</b> have equal popularity</p>
+                    }
+                </div>
+                <hr class="thicker" />
+                <h2>Search History</h2>
+                <hr class="thick" />
+                @foreach (var item in Model.tweetsCount)
+                {
+                <div>
+                    <b>@item.searchTerm1 = @item.searchTermCount1</b> compared to <b>@item.searchTerm2 = @item.searchTermCount2</b>
+                <hr />
+                </div>
+                }
+            </div>
+        }
+    }
 </div>
